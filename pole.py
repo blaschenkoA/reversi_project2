@@ -192,8 +192,6 @@ class Fishki(pygame.sprite.Sprite):
     image_0 = load_image("color_0.png", -1)
 
     def __init__(self, group, x, y):
-        # НЕОБХОДИМО вызвать конструктор родительского класса Sprite.
-        # Это очень важно !!!
         super().__init__(group)
         self.image = Fishki.image_0
         self.rect = self.image.get_rect()
