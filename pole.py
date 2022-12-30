@@ -50,7 +50,7 @@ class PoleReversi:
         for i in range(8):
             for j in range(8):
                 if not self.pole[i][j]:  # проверка по вертикали вниз
-                    if i != 7 and self.pole[i + 1][j] != 0 and self.pole[i + 1][j] != self.hod:
+                    if i != 7 and self.pole[i + 1][j] not in (0, 3, self.hod):
                         for i1 in range(i + 1, 8):
                             if self.pole[i1][j] in (0, 3):
                                 break
@@ -58,7 +58,7 @@ class PoleReversi:
                                 self.pole[i][j] = 3
                                 break
                 if not self.pole[i][j]:  # проверка по вертикали вверх
-                    if i != 0 and self.pole[i - 1][j] != 0 and self.pole[i - 1][j] != self.hod:
+                    if i != 0 and self.pole[i - 1][j] not in (0, 3, self.hod):
                         for i1 in range(i - 1, 0, -1):
                             if self.pole[i1][j] in (0, 3):
                                 break
@@ -66,7 +66,7 @@ class PoleReversi:
                                 self.pole[i][j] = 3
                                 break
                 if not self.pole[i][j]:  # проверка по горизонтали влево
-                    if j != 0 and self.pole[i][j - 1] != 0 and self.pole[i][j - 1] != self.hod:
+                    if j != 0 and self.pole[i][j - 1] not in (0, 3, self.hod):
                         for j1 in range(j - 1, 0, -1):
                             if self.pole[i][j1] in (0, 3):
                                 break
@@ -74,7 +74,7 @@ class PoleReversi:
                                 self.pole[i][j] = 3
                                 break
                 if not self.pole[i][j]:  # проверка по горизонтали вправо
-                    if j != 7 and self.pole[i][j + 1] != 0 and self.pole[i][j + 1] != self.hod:
+                    if j != 7 and self.pole[i][j + 1] not in (0, 3, self.hod):
                         for j1 in range(j + 1, 8):
                             if self.pole[i][j1] in (0, 3):
                                 break
@@ -82,8 +82,7 @@ class PoleReversi:
                                 self.pole[i][j] = 3
                                 break
                 if not self.pole[i][j]:  # проверка по диагонали вправо-вниз
-                    if j != 7 and i != 7 and self.pole[i + 1][j + 1] != 0 and\
-                            self.pole[i + 1][j + 1] != self.hod:
+                    if j != 7 and i != 7 and self.pole[i + 1][j + 1] not in (0, 3, self.hod):
                         f = True
                         for i1 in range(i + 1, 8):
                             for j1 in range(j + 1, 8):
@@ -98,8 +97,7 @@ class PoleReversi:
                             if not f:
                                 break
                 if not self.pole[i][j]:  # проверка по диагонали вправо-вверх
-                    if j != 7 and i != 0 and self.pole[i - 1][j + 1] != 0 and \
-                            self.pole[i - 1][j + 1] != self.hod:
+                    if j != 7 and i != 0 and self.pole[i - 1][j + 1] not in (0, 3, self.hod):
                         f = True
                         for i1 in range(i - 1, 0, -1):
                             for j1 in range(j + 1, 8):
@@ -114,8 +112,7 @@ class PoleReversi:
                             if not f:
                                 break
                 if not self.pole[i][j]:  # проверка по диагонали влево-вниз
-                    if j != 0 and i != 7 and self.pole[i + 1][j - 1] != 0 and \
-                            self.pole[i + 1][j - 1] != self.hod:
+                    if j != 0 and i != 7 and self.pole[i + 1][j - 1] not in (0, 3, self.hod):
                         f = True
                         for i1 in range(i + 1, 8):
                             for j1 in range(j - 1, 0, -1):
@@ -130,8 +127,7 @@ class PoleReversi:
                             if not f:
                                 break
                 if not self.pole[i][j]:  # проверка по диагонали влево-вверх
-                    if j != 0 and i != 0 and self.pole[i - 1][j - 1] != 0 and \
-                            self.pole[i - 1][j - 1] != self.hod:
+                    if j != 0 and i != 0 and self.pole[i - 1][j - 1] not in (0, 3, self.hod):
                         f = True
                         for i1 in range(i - 1, 0, -1):
                             for j1 in range(j - 1, 0, -1):
