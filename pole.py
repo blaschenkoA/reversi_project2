@@ -1,3 +1,5 @@
+import time
+
 import pygame
 import os
 import sys
@@ -175,38 +177,48 @@ class PoleReversi:
         else:
             return 1
 
-    def clik_hod(self, cell):
+    def clik_hod(self, cell, v=False):
         if not cell or self.pole[cell[0]][cell[1]] != 3:
             return
 
-        self.pole[cell[0]][cell[1]] = self.hod
+        if v or self.versy or (not self.versy and self.hod == 1):
 
-        opposite = self.opposite_hod(self.hod)
+            self.pole[cell[0]][cell[1]] = self.hod
 
-        lines_ar = ((1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1))
+            opposite = self.opposite_hod(self.hod)
 
-        for line in lines_ar:
-            row = line[0]
-            column = line[1]
+            lines_ar = ((1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1))
 
-            i = cell[0] + row
-            j = cell[1] + column
+            for line in lines_ar:
+                row = line[0]
+                column = line[1]
 
-            to_flip_ar = []  # координаты фишек, которые перевернутся
+                i = cell[0] + row
+                j = cell[1] + column
 
-            if i in range(8) and j in range(8) and self.pole[i][j] == opposite:
-                to_flip_ar.append((i, j))
-                i = i + row
-                j = j + column
-                while i in range(8) and j in range(8) and self.pole[i][j] == opposite:
+                to_flip_ar = []  # координаты фишек, которые перевернутся
+
+                if i in range(8) and j in range(8) and self.pole[i][j] == opposite:
                     to_flip_ar.append((i, j))
                     i = i + row
                     j = j + column
-                if i in range(8) and j in range(8) and self.pole[i][j] == self.hod:
-                    for coords in to_flip_ar:
-                        self.pole[coords[0]][coords[1]] = self.hod
+                    while i in range(8) and j in range(8) and self.pole[i][j] == opposite:
+                        to_flip_ar.append((i, j))
+                        i = i + row
+                        j = j + column
+                    if i in range(8) and j in range(8) and self.pole[i][j] == self.hod:
+                        for coords in to_flip_ar:
+                            self.pole[coords[0]][coords[1]] = self.hod
 
         self.hod = opposite
+        colvo_3 = 0
+        self.vozmozhnyj_hod()
+        for i in self.pole:
+            for j in i:
+                if j == 3:
+                    colvo_3 += 1
+        if not colvo_3:
+            self.hod = self.opposite_hod(opposite)
 
     def get_colvo(self, cell):
         opposite = self.opposite_hod(self.hod)
@@ -220,15 +232,15 @@ class PoleReversi:
             j = cell[1] + column
             to_flip_ar = []  # координаты фишек, которые могут перевернутся
 
-            if self.pole[i][j] == opposite and i in range(8) and j in range(8):
+            if i in range(8) and j in range(8) and self.pole[i][j] == opposite:
                 to_flip_ar.append((i, j))
                 i = i + row
                 j = j + column
-                while self.pole[i][j] == opposite and i in range(8) and j in range(8):
+                while i in range(8) and j in range(8) and self.pole[i][j] == opposite:
                     to_flip_ar.append((i, j))
                     i = i + row
                     j = j + column
-                if self.pole[i][j] == self.hod and i in range(8) and j in range(8):
+                if i in range(8) and j in range(8) and self.pole[i][j] == self.hod:
                     colvo += len(to_flip_ar)
 
         return colvo
@@ -243,6 +255,7 @@ class PoleReversi:
                     c1 += 1
                 if j == 2:
                     c2 += 1
+        self.hod = 1
         if c1 == c2:
             return 3
         if c1 > c2:
@@ -257,6 +270,57 @@ class PoleReversi:
         self.pole[3][4] = 1
         self.pole[4][3] = 1
         self.hod = 1
+
+    def bot(self):
+        self.vozmozhnyj_hod()
+        variant = []
+        for i in range(8):
+            for j in range(8):
+                if self.pole[i][j] == 3:
+                    variant.append((i, j))
+
+        if not variant:
+            return
+
+        best_variant = []
+        for i in [(0, 0), (0, 7), (7, 7), (7, 0)]:
+            if i in variant:
+                best_variant.append([i, self.get_colvo(i)])
+        if best_variant:
+            self.clik_hod(sorted(best_variant, key=lambda x: x[1])[-1][0], True)
+            return
+
+        for i in [(0, 2), (0, 3), (0, 4), (0, 5), (7, 2), (7, 3), (7, 4), (7, 5),
+                  (2, 0), (3, 0), (4, 0), (5, 0), (2, 7), (3, 7), (4, 7), (5, 7)]:
+            if i in variant:
+                best_variant.append([i, self.get_colvo(i)])
+        if best_variant:
+            self.clik_hod(sorted(best_variant, key=lambda x: x[1])[-1][0], True)
+            return
+
+        for i in [(2, 2), (2, 3), (2, 4), (2, 5), (5, 2), (5, 3), (5, 4), (5, 5),
+                  (3, 2), (3, 5), (4, 2), (4, 5)]:
+            if i in variant:
+                best_variant.append([i, self.get_colvo(i)])
+        if best_variant:
+            self.clik_hod(sorted(best_variant, key=lambda x: x[1])[-1][0], True)
+            return
+
+        for i in [(1, 2), (1, 3), (1, 4), (1, 5), (6, 2), (6, 3), (6, 4), (6, 5),
+                  (2, 1), (3, 1), (4, 1), (5, 1), (2, 6), (3, 6), (4, 6), (5, 6)]:
+            if i in variant:
+                best_variant.append([i, self.get_colvo(i)])
+        if best_variant:
+            self.clik_hod(sorted(best_variant, key=lambda x: x[1])[-1][0], True)
+            return
+
+        for i in [(1, 1), (1, 0), (0, 1), (1, 6), (1, 7), (0, 6), (6, 6), (6, 7),
+                  (7, 6), (6, 1), (6, 0), (7, 1)]:
+            if i in variant:
+                best_variant.append([i, self.get_colvo(i)])
+        if best_variant:
+            self.clik_hod(sorted(best_variant, key=lambda x: x[1])[-1][0], True)
+            return
 
 
 pygame.init()
@@ -376,3 +440,6 @@ while running:
     all_sprites.draw(screen)
     draw(screen)
     pygame.display.flip()
+    if board.hod == 2 and not board.versy:
+        time.sleep(0.5)
+        board.bot()
