@@ -21,19 +21,19 @@ def load_image(name, colorkey=None):
 
 # Тут указываешь вместо цветов по умолчанию те цвета
 # которые пользователь выбрал в главном меню в виде переменной. (потом подключим)
-COLOR_B = "var1_b.png"
-COLOR_W = "var1_w.png"
+COLOR_B = "var2_b.png"
+COLOR_W = "var2_w.png"
 
 
 class PoleReversi:
     # Хранение данных поля
     # (расположение фишек, цвета фишек и доски: по умолчанию или выбранные пользователем в меню)
-    def __init__(self, color_pole=(91, 169, 91)):
+    def __init__(self, color_pole=("#C7CFD4")):
         self.pole = [[0 for i in range(8)] for j in range(8)]
-        self.pole[3][3] = 1
-        self.pole[4][4] = 1
-        self.pole[3][4] = 2
-        self.pole[4][3] = 2
+        self.pole[3][3] = 2
+        self.pole[4][4] = 2  # поменял фишки местами
+        self.pole[3][4] = 1
+        self.pole[4][3] = 1
         self.hod = 1
         self.color_pole = color_pole
         self.width = 8
@@ -168,15 +168,51 @@ class PoleReversi:
                     return x, y
         return None
 
-    def clik_hod(self, cell):  # Пункт 6 плана разработки
-        pass
+    def opposite_hod(self, cur_hod):  # функция просто возвращающая белый ход, если сейчас ход черных, и наоборот
+        if cur_hod == 1:
+            return 2
+        else:
+            return 1
+
+    def clik_hod(self, cell):
+        if self.pole[cell[0]][cell[1]] != 3:
+            return
+
+        self.pole[cell[0]][cell[1]] = self.hod
+
+        opposite = self.opposite_hod(self.hod)
+
+        lines_ar = ((1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1))
+
+        for line in lines_ar:
+            row = line[0]
+            column = line[1]
+
+            i = cell[0] + row
+            j = cell[1] + column
+
+            to_flip_ar = []  # координаты фишек, которые перевернутся
+
+            if self.pole[i][j] == opposite and i in range(8) and j in range(8):
+                to_flip_ar.append((i, j))
+                i = i + row
+                j = j + column
+                while self.pole[i][j] == opposite and i in range(8) and j in range(8):
+                    to_flip_ar.append((i, j))
+                    i = i + row
+                    j = j + column
+                if self.pole[i][j] == self.hod and i in range(8) and j in range(8):
+                    for coords in to_flip_ar:
+                        self.pole[coords[0]][coords[1]] = self.hod
+
+        self.hod = opposite
 
 
 pygame.init()
 pygame.display.set_caption('Игра')
 screen = pygame.display.set_mode((900, 500))
 all_sprites = pygame.sprite.Group()
-color_pole = (91, 169, 91)
+color_pole = ("#C7CFD4")
 board = PoleReversi(color_pole)
 running = True
 
@@ -196,12 +232,14 @@ class Fishki(pygame.sprite.Sprite):
 
     def update(self):
         cell = board.get_cell((self.rect.x, self.rect.y))
-        if board.pole[cell[1]][cell[0]] == 1:
+        if board.pole[cell[0]][cell[1]] == 1:  # поменял как говорил
             self.image = Fishki.image_b
-        elif board.pole[cell[1]][cell[0]] == 2:
+        elif board.pole[cell[0]][cell[1]] == 2:
             self.image = Fishki.image_w
-        elif board.pole[cell[1]][cell[0]] == 3:
+        elif board.pole[cell[0]][cell[1]] == 3:
             self.image = Fishki.image_3
+        elif board.pole[cell[0]][cell[1]] == 0:
+            self.image = Fishki.image_0
 
 
 for y in range(board.height):
