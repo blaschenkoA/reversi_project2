@@ -70,6 +70,8 @@ def draw(screen):
 
 
 if __name__ == '__main__':
+    PLAER = False
+
     class PoleReversi:
         # Хранение данных поля
         # (расположение фишек, цвета фишек и доски: по умолчанию или выбранные пользователем в меню)
@@ -300,10 +302,28 @@ if __name__ == '__main__':
                         c2 += 1
             self.hod = 1
             if c1 == c2:
+                con = sqlite3.connect("players.db")
+                cur = con.cursor()
+                cur.execute("""UPDATE players SET draw_games = ?
+                                WHERE id = ?""", (PLAER[4] + 1, PLAER[0]))
+                con.commit()
+                con.close()
                 return 3
             if c1 > c2:
+                con = sqlite3.connect("players.db")
+                cur = con.cursor()
+                cur.execute("""UPDATE players SET won_games = ?
+                                WHERE id = ?""", (PLAER[2] + 1, PLAER[0]))
+                con.commit()
+                con.close()
                 return 1
             if c2 > c1:
+                con = sqlite3.connect("players.db")
+                cur = con.cursor()
+                cur.execute("""UPDATE players SET lost_games = ?
+                                WHERE id = ?""", (PLAER[3] + 1, PLAER[0]))
+                con.commit()
+                con.close()
                 return 2
 
         def restart(self):
@@ -473,6 +493,7 @@ if __name__ == '__main__':
                             if data:
                                 AUTORIZATION = False
                                 MENU = True
+                                PLAER = data[0]
                                 pygame.display.set_caption('Меню')
                             else:
                                 error_label = font3.render("Аккаунта с такими данными не существует", True, "red")
@@ -584,12 +605,6 @@ if __name__ == '__main__':
                 for x in range(board.width):
                     Fishki(all_sprites, x * board.cell_size + board.left + 1,
                            y * board.cell_size + board.top + 1)
-            Restart(all_sprites)
-            screen.fill((0, 0, 0))
-            all_sprites.update(event)
-            board.render(screen)
-            all_sprites.draw(screen)
-            draw(screen)
 
             rectangle = pygame.Rect(830, 430, 60, 60)
             pygame.draw.rect(screen, "black", rectangle)
@@ -605,6 +620,15 @@ if __name__ == '__main__':
                         GAME = False
                         MENU = True
                     board.get_click(event.pos)
+
+            Restart(all_sprites)
+            screen.fill((0, 0, 0))
+            all_sprites.update(event)
+            board.render(screen)
+            all_sprites.draw(screen)
+            draw(screen)
+            quit_icon = load_image("quit.png")
+            gameDisplay.blit(quit_icon, (830, 430))
 
             pygame.display.flip()
 
