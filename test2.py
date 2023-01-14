@@ -70,7 +70,7 @@ def draw(screen):
 
 
 if __name__ == '__main__':
-    PLAER = False
+    PLAYER = False
 
     class PoleReversi:
         # Хранение данных поля
@@ -305,7 +305,7 @@ if __name__ == '__main__':
                 con = sqlite3.connect("players.db")
                 cur = con.cursor()
                 cur.execute("""UPDATE players SET draw_games = ?
-                                WHERE id = ?""", (PLAER[4] + 1, PLAER[0]))
+                                WHERE id = ?""", (PLAYER[4] + 1, PLAYER[0]))
                 con.commit()
                 con.close()
                 return 3
@@ -313,7 +313,7 @@ if __name__ == '__main__':
                 con = sqlite3.connect("players.db")
                 cur = con.cursor()
                 cur.execute("""UPDATE players SET won_games = ?
-                                WHERE id = ?""", (PLAER[2] + 1, PLAER[0]))
+                                WHERE id = ?""", (PLAYER[2] + 1, PLAYER[0]))
                 con.commit()
                 con.close()
                 return 1
@@ -321,7 +321,7 @@ if __name__ == '__main__':
                 con = sqlite3.connect("players.db")
                 cur = con.cursor()
                 cur.execute("""UPDATE players SET lost_games = ?
-                                WHERE id = ?""", (PLAER[3] + 1, PLAER[0]))
+                                WHERE id = ?""", (PLAYER[3] + 1, PLAYER[0]))
                 con.commit()
                 con.close()
                 return 2
@@ -401,6 +401,7 @@ if __name__ == '__main__':
     AUTORIZATION = True
     MENU = False
     GAME = False
+    STATS = False
 
     COLOR_B = "var2_b.png"
     COLOR_W = "var2_w.png"
@@ -493,7 +494,7 @@ if __name__ == '__main__':
                             if data:
                                 AUTORIZATION = False
                                 MENU = True
-                                PLAER = data[0]
+                                PLAYER = data[0]
                                 pygame.display.set_caption('Меню')
                             else:
                                 error_label = font3.render("Аккаунта с такими данными не существует", True, "red")
@@ -563,14 +564,19 @@ if __name__ == '__main__':
             ai_game_background = pygame.Rect(115, 217, 160, 4)
             two_player_game = pygame.Rect(100, 260, 189, 69)  # кнопка для игры против бота
             two_player_game_background = pygame.Rect(115, 317, 160, 4)
-            quit = pygame.Rect(790, 465, 90, 20) # кнопка выхода
+            quit = pygame.Rect(790, 465, 90, 20)  # кнопка выхода
             quit_background = pygame.Rect(780, 490, 90, 3)
+            stats_btn = pygame.Rect(630, 465, 140, 20)  # кнопка, открывающая окно отображения статистики
+            stats_btn_background = pygame.Rect(622, 490, 140, 3)
 
             pygame.draw.rect(screen, "#FF96E8", ai_game, 2)
             pygame.draw.rect(screen, "#FF96E8", two_player_game, 2)
 
             quit_label = font4.render("Выйти", True, "white")
             screen.blit(quit_label, (790, 465))
+
+            stats_label = font4.render("Статистика", True, "white")
+            screen.blit(stats_label, (630, 465))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -590,6 +596,9 @@ if __name__ == '__main__':
                         if board.versy != 0:
                             board.restart()
                         board.versy = 0
+                    if stats_btn.collidepoint(event.pos):
+                        STATS = True
+                        MENU = False
                     if quit.collidepoint(event.pos):
                         pygame.quit()
                 if event.type == my_event:
@@ -600,9 +609,62 @@ if __name__ == '__main__':
                         pygame.draw.rect(screen, "white", ai_game_background)
                     if quit.collidepoint((x, y)):
                         pygame.draw.rect(screen, "white", quit_background)
+                    if stats_btn.collidepoint((x, y)):
+                        pygame.draw.rect(screen, "white", stats_btn_background)
 
             pygame.display.update()
-            clock.tick(1000)
+
+        if STATS:
+            display_the_background("stats.png", 0, 0)
+
+            my_event = pygame.USEREVENT + 1
+            pygame.time.set_timer(my_event, 1)
+
+            quit = pygame.Rect(790, 465, 90, 20)  # кнопка выхода
+            quit_background = pygame.Rect(780, 490, 90, 3)
+            stats_btn = pygame.Rect(630, 465, 140, 20)  # кнопка, закрывающая окно отображения статистики
+            stats_btn_background = pygame.Rect(622, 490, 140, 3)
+
+            quit_label = font4.render("Выйти", True, "white")
+            screen.blit(quit_label, (790, 465))
+
+            stats_label = font4.render("Статистика", True, "white")
+            screen.blit(stats_label, (630, 465))
+
+            con = sqlite3.connect("players.db")  # получение информации об аккаунте с именем text из базы данных
+            cur = con.cursor()
+            data = cur.execute("""SELECT * FROM players
+                                    WHERE account_name = ?""", (text,)).fetchall()
+            # data: (id, player_name, victories, loses, draws)
+            con.commit()
+            con.close()
+
+            acc_name_label = font4.render(str(data[0][1]), True, "white")
+            screen.blit(acc_name_label, (565, 190))
+            victories_label = font4.render(str(data[0][2]), True, "white")
+            screen.blit(victories_label, (821, 248))
+            loses_label = font4.render(str(data[0][3]), True, "white")
+            screen.blit(loses_label, (821, 285))
+            draws_label = font4.render(str(data[0][4]), True, "white")
+            screen.blit(draws_label, (821, 322))
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    crashed = True
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if quit.collidepoint(event.pos):
+                        pygame.quit()
+                    if stats_btn.collidepoint(event.pos):
+                        STATS = False
+                        MENU = True
+                if event.type == my_event:
+                    x, y = pygame.mouse.get_pos()
+                    if quit.collidepoint((x, y)):
+                        pygame.draw.rect(screen, "white", quit_background)
+                    if stats_btn.collidepoint((x, y)):
+                        pygame.draw.rect(screen, "white", stats_btn_background)
+
+            pygame.display.update()
 
         if GAME:
             for y in range(board.height):
