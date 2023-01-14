@@ -454,7 +454,7 @@ if __name__ == '__main__':
 
     input_box = pygame.Rect(579, 216, 20, 20)  # прямоугольник для ввода текста
     sign_in_button = pygame.Rect(724, 368, 136, 27)  # кнопка "войти"
-    reg_button = pygame.Rect(724, 422, 136, 27)  # тож кнопка "регистрация"
+    reg_button = pygame.Rect(724, 422, 136, 27)  # тоже кнопка "регистрация"
 
     sign_in_label = font2.render("Войти", True, "black")
     reg_label = font2.render("Регистрация", True, "black")
@@ -580,11 +580,15 @@ if __name__ == '__main__':
                         pygame.display.set_caption('Игра')  # ЕСЛИ С ЧЕЛОВЕКОМ
                         MENU = False
                         GAME = True
+                        if board.versy != 1:
+                            board.restart()
                         board.versy = 1
                     if ai_game.collidepoint(event.pos):
                         pygame.display.set_caption('Игра')  # ЕСЛИ С БОТОМ
                         MENU = False
                         GAME = True
+                        if board.versy != 0:
+                            board.restart()
                         board.versy = 0
                     if quit.collidepoint(event.pos):
                         pygame.quit()
