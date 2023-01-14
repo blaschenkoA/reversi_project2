@@ -699,7 +699,7 @@ if __name__ == '__main__':
             pygame.display.flip()
 
             if board.hod == 2 and not board.versy:
-                time.sleep(0.5)
+                time.sleep(0.25)
                 board.bot()
 
     pygame.quit()
