@@ -71,6 +71,9 @@ def draw(screen):
 
 if __name__ == '__main__':
     PLAYER = False
+    pygame.init()
+
+    sound1 = pygame.mixer.Sound("data/movement_sound.ogg")
 
     class PoleReversi:
         # Хранение данных поля
@@ -225,6 +228,8 @@ if __name__ == '__main__':
         def clik_hod(self, cell, v=False):
             if not cell or self.pole[cell[0]][cell[1]] != 3:
                 return
+
+            sound1.play()
 
             if v or self.versy or (not self.versy and self.hod == 1):
 
@@ -385,7 +390,7 @@ if __name__ == '__main__':
                 self.clik_hod(sorted(best_variant, key=lambda x: x[1])[-1][0], True)
                 return
 
-    pygame.init()
+
     size = window_width, window_height = 900, 500
     screen = pygame.display.set_mode(size)
     all_sprites = pygame.sprite.Group()
@@ -703,3 +708,4 @@ if __name__ == '__main__':
                 board.bot()
 
     pygame.quit()
+    
