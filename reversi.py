@@ -317,7 +317,7 @@ if __name__ == '__main__':
                 con = sqlite3.connect("players.db")
                 cur = con.cursor()
                 cur.execute("""UPDATE players SET won_games = ?
-                                WHERE id = ?""", (PLAYER[2] + 1, PLAYER[0]))
+                                WHERE id = ?""", (int(PLAYER[2]) + 1, PLAYER[0]))
                 con.commit()
                 con.close()
                 return 1
@@ -325,7 +325,7 @@ if __name__ == '__main__':
                 con = sqlite3.connect("players.db")
                 cur = con.cursor()
                 cur.execute("""UPDATE players SET lost_games = ?
-                                WHERE id = ?""", (PLAYER[3] + 1, PLAYER[0]))
+                                WHERE id = ?""", (int(PLAYER[3]) + 1, PLAYER[0]))
                 con.commit()
                 con.close()
                 return 2
@@ -520,6 +520,9 @@ if __name__ == '__main__':
                                 cur.execute('''INSERT INTO players(
                                            account_name, won_games, lost_games, draw_games) VALUES (?, ?, ?, ?)''',
                                             (text, 0, 0, 0))
+                                data = cur.execute("""SELECT * FROM players
+                                                        WHERE account_name = ?""", (text,)).fetchall()
+                                PLAYER = data[0]
                                 con.commit()
                                 con.close()
                                 AUTORIZATION = False
