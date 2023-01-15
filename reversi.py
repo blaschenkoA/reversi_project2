@@ -659,6 +659,7 @@ if __name__ == '__main__':
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if quit.collidepoint(event.pos):
                         pygame.quit()
+                        exit()
                     if stats_btn.collidepoint(event.pos):
                         STATS = False
                         MENU = True
