@@ -1,5 +1,4 @@
 import time
-
 import pygame
 import sqlite3
 import sys
