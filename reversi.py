@@ -259,15 +259,15 @@ if __name__ == '__main__':
                             for coords in to_flip_ar:
                                 self.pole[coords[0]][coords[1]] = self.hod
 
-            self.hod = opposite
-            colvo_3 = 0
-            self.vozmozhnyj_hod()
-            for i in self.pole:
-                for j in i:
-                    if j == 3:
-                        colvo_3 += 1
-            if not colvo_3:
-                self.hod = self.opposite_hod(opposite)
+                self.hod = opposite
+                colvo_3 = 0
+                self.vozmozhnyj_hod()
+                for i in self.pole:
+                    for j in i:
+                        if j == 3:
+                            colvo_3 += 1
+                if not colvo_3:
+                    self.hod = self.opposite_hod(opposite)
 
         def get_colvo(self, cell):
             opposite = self.opposite_hod(self.hod)
