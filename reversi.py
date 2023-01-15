@@ -605,6 +605,7 @@ if __name__ == '__main__':
                         MENU = False
                     if quit.collidepoint(event.pos):
                         pygame.quit()
+                        exit()
                 if event.type == my_event:
                     x, y = pygame.mouse.get_pos()
                     if two_player_game.collidepoint((x, y)):
